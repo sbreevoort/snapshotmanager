@@ -5,4 +5,7 @@ Demo project to manage AWS EC2 instance snapshots with Boto3
 uses profile snapshotmanager
 
 ## running
-pipenv run python src\snapshotmanager.py
+`pipenv run python src\snapshotmanager.py <command> <--project=PROJECT>`
+
+*command* is list, start or stop
+*project* is optional
