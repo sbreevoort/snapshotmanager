@@ -79,13 +79,20 @@ def instances():
 def create_snapshots(project):
     "Create snapshot of EC2 instances"
 
-# instance moet eerst gestopt worden!
+
     instances = filter_instances(project)
     for i in instances:
+        print('Stopping instance {0} ....'.format(i.id))
+        i.stop()  # instance moet eerst gestopt worden om veilig snapshot te maken
+        i.wait_until_stopped()
         for v in i.volumes.all():
             print('Creating snapshot of volume {0}'.format(v.id))
             v.create_snapshot('Created by snapshotmanager')
+        print('Starting instance {0} ....'.format(i.id))
+        i.start()
+        i.wait_until_running()
 
+    print('Done')
     return
 
 
