@@ -8,5 +8,7 @@ uses profile snapshotmanager
 `pipenv run python src\snapshotmanager.py <command> <subcommand> <--project=PROJECT>`
 
 *command* is instances, volumes or snapshots
+
 *subcommand* depends on command, e.g. list, start or stop
+
 *project* is optional

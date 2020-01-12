@@ -1,4 +1,5 @@
 import boto3
+import botocore
 import click
 
 session = boto3.Session(profile_name='snapshotmanager')
@@ -83,13 +84,23 @@ def create_snapshots(project):
     instances = filter_instances(project)
     for i in instances:
         print('Stopping instance {0} ....'.format(i.id))
-        i.stop()  # instance moet eerst gestopt worden om veilig snapshot te maken
+        try:
+            i.stop()  # instance moet eerst gestopt worden om veilig snapshot te maken
+        except botocore.exceptions.ClientError as e:
+            print('Could not stop instance {0} '.format(i.id) + str(e))
+            continue
+
         i.wait_until_stopped()
         for v in i.volumes.all():
             print('Creating snapshot of volume {0}'.format(v.id))
             v.create_snapshot('Created by snapshotmanager')
         print('Starting instance {0} ....'.format(i.id))
-        i.start()
+        try:
+            i.start()
+        except botocore.exceptions.ClientError as e:
+            print('Could not start instance {0} '.format(i.id) + str(e))
+            continue
+
         i.wait_until_running()
 
     print('Done')
@@ -126,8 +137,10 @@ def stop_instances(project):
 
     for i in instances:
         print('Stopping {0}...'.format(i.id))
-        i.stop()
-
+        try:
+            i.stop()
+        except botocore.exceptions.ClientError as e:
+            print('Could not stop instance {0} '.format(i.id) + str(e))
     return
 
 
@@ -139,7 +152,10 @@ def start_instances(project):
 
     for i in instances:
         print('Starting {0}...'.format(i.id))
-        i.start()
+        try:
+            i.start()
+        except botocore.exceptions.ClientError as e:
+            	print('Could not start instance {0} '.format(i.id) + str(e))
 
     return
 
